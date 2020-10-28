@@ -16,7 +16,7 @@
         tools:ignore="Instantiatable">
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-6390328241621907~1756044033"/>
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
         <activity android:name="lk.devildeveloper.sanoj.sintolegconvert.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

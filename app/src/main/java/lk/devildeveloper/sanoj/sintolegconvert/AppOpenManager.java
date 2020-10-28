@@ -22,7 +22,7 @@ import static androidx.lifecycle.Lifecycle.Event.ON_START;
 
 public class AppOpenManager implements LifecycleObserver, Application.ActivityLifecycleCallbacks{
     private static final String LOG_TAG = "AppOpenManager";
-    private static final String AD_UNIT_ID = "ca-app-pub-6390328241621907/5565612324";
+    private static final String AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
     private AppOpenAd appOpenAd = null;
     private static boolean isShowingAd = false;
     private long loadTime = 0;
