@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Sinhala Unicode to Legacy</string>
+    <string name="unicodesiz">Unicode Text Size</string>
+    <string name="lagacy">Legacy Text Siza</string>
+</resources>
