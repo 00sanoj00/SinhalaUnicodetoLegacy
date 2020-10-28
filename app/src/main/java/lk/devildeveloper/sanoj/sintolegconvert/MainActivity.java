@@ -31,6 +31,7 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.sdsmdg.tastytoast.TastyToast;
 import com.shashank.sony.fancygifdialoglib.FancyGifDialog;
 import com.shashank.sony.fancygifdialoglib.FancyGifDialogListener;
 
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.setAdUnitId("ca-app-pub-6390328241621907/6747983437");
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
         dialog = new ACProgressFlower.Builder(this)
@@ -835,24 +836,27 @@ public class MainActivity extends AppCompatActivity {
             public void onAdFailedToLoad(LoadAdError adError) {
                 // Code to be executed when an ad request fails.
                 mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                copymytext();
             }
 
             @Override
             public void onAdOpened() {
                 // Code to be executed when the ad is displayed.
-                Toast.makeText(getApplicationContext(), "Copying begins when the ad closes", Toast.LENGTH_SHORT).show();
+                TastyToast.makeText(getApplicationContext(), "Copying begins when the ad closes", TastyToast.LENGTH_SHORT, TastyToast.SUCCESS);
             }
 
             @Override
             public void onAdClicked() {
                 // Code to be executed when the user clicks on an ad.
                 mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                copymytext();
             }
 
             @Override
             public void onAdLeftApplication() {
                 // Code to be executed when the user has left the app.
                 mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                copymytext();
             }
 
             @Override
@@ -870,7 +874,7 @@ public class MainActivity extends AppCompatActivity {
         ClipboardManager clipbord = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("Text",clipiniya);
         clipbord.setPrimaryClip(clip);
-        Toast.makeText(getApplicationContext(), "Text Copied", Toast.LENGTH_SHORT).show();
+        TastyToast.makeText(getApplicationContext(), "Text Copied !", TastyToast.LENGTH_SHORT, TastyToast.SUCCESS);
     }
 
 }
