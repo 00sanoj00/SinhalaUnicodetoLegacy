@@ -2,11 +2,14 @@ package lk.devildeveloper.sanoj.sintolegconvert;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
@@ -26,11 +29,13 @@ import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.pixplicity.easyprefs.library.Prefs;
 import com.sdsmdg.tastytoast.TastyToast;
 import com.shashank.sony.fancygifdialoglib.FancyGifDialog;
 import com.shashank.sony.fancygifdialoglib.FancyGifDialogListener;
@@ -43,6 +48,10 @@ import lk.devildeveloper.sanoj.zanjou.http.debug.Logger;
 import lk.devildeveloper.sanoj.zanjou.http.request.Request;
 import lk.devildeveloper.sanoj.zanjou.http.request.RequestListener;
 import lk.devildeveloper.sanoj.zanjou.http.response.XmlResponseListener;
+import smartdevelop.ir.eram.showcaseviewlib.GuideView;
+import smartdevelop.ir.eram.showcaseviewlib.config.DismissType;
+import smartdevelop.ir.eram.showcaseviewlib.config.Gravity;
+import smartdevelop.ir.eram.showcaseviewlib.listener.GuideListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,23 +61,46 @@ public class MainActivity extends AppCompatActivity {
    private CheckBox views;
    private ClipboardManager myClipboard;
    private ClipData myClip;
-   private ImageButton imagebuttoncopy;
    private Typeface Legacys;
    private Typeface arial;
     private ACProgressFlower dialog;
     private String linkexample;
     private Button erazers;
     private InterstitialAd mInterstitialAd;
+    private Toolbar toolbar;
+    private AdView mAdView;
+    private View view1;
+    private View view2;
+    private View view3;
+    private View view4;
+    private View view5;
+    private View view6;
+    private GuideView mGuideView;
+    private GuideView.Builder builder;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        new Prefs.Builder()
+                .setContext(this)
+                .setMode(ContextWrapper.MODE_PRIVATE)
+                .setPrefsName(getPackageName())
+                .setUseDefaultSharedPreference(true)
+                .build();
+
 
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
             public void onInitializationComplete(InitializationStatus initializationStatus) {
             }
         });
+
+
+
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId("ca-app-pub-6390328241621907/6747983437");
@@ -80,13 +112,17 @@ public class MainActivity extends AppCompatActivity {
                 .text("Getting Example")
                 .fadeColor(Color.WHITE).build();
 
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.app_name);
+        toolbar.setTitleTextColor(Color.WHITE);
+        setSupportActionBar(toolbar);
+
         Legacys = Typeface.createFromAsset(getAssets(),"fonts/FMArjunnx.otf");
         arial = Typeface.createFromAsset(getAssets(),"fonts/arial.ttf");
 
         unicode = (EditText) findViewById(R.id.unicode);
         Legacy = (EditText) findViewById(R.id.ligacy);
         Legacy.setTypeface(Legacys);
-        imagebuttoncopy = findViewById(R.id.imageButton);
         erazers = findViewById(R.id.erazer);
         /////////////////////////////////////////////////////////////////
 
@@ -102,6 +138,29 @@ public class MainActivity extends AppCompatActivity {
 
         unicodechanger();
 
+        view1 = findViewById(R.id.firstlayout);
+        view2 = findViewById(R.id.firstlayout2);
+        view3 = findViewById(R.id.seekBar);
+        view4 = findViewById(R.id.erazer);
+        view5 = findViewById(R.id.checkBox);
+        view6 = findViewById(R.id.toolbar);
+
+
+
+
+
+        try{
+            String data = Prefs.getString("frist", "1sttime");
+            if(data.equals("1sttime"))   {
+                showcasig1();
+            }else{
+                //disable Showcase
+            }
+
+        }catch (Exception IOP){
+
+        }
+
         erazers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,22 +169,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Clear", Toast.LENGTH_SHORT).show();
             }
         });
-
-        imagebuttoncopy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (mInterstitialAd.isLoaded()) {
-                    mInterstitialAd.show();
-                } else {
-                    Log.d("TAG", "The interstitial wasn't loaded yet.");
-                    copymytext();
-                    mInterstitialAd.loadAd(new AdRequest.Builder().build());
-                }
-
-            }
-        });
-
         views = (CheckBox) findViewById(R.id.checkBox);
         views.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -159,19 +202,63 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
+        inflater.inflate(R.menu.main_menu, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // action with ID action_refresh was selected
-            case R.id.action_refresh:
+    public boolean onOptionsItemSelected(MenuItem items) {
+        switch (items.getItemId()) {
+            case  R.id.imageButton:
+                showads();
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.setAdListener(new AdListener() {
+                        @Override
+                        public void onAdLoaded() {
+                            // Code to be executed when an ad finishes loading.
+                        }
+                        @Override
+                        public void onAdFailedToLoad(LoadAdError adError) {
+                            // Code to be executed when an ad request fails.
+                            mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                            copymytext();
+                            TastyToast.makeText(getApplicationContext(), "Text Copied !", TastyToast.LENGTH_SHORT, TastyToast.SUCCESS);
+                        }
 
+                        @Override
+                        public void onAdOpened() {
+                            // Code to be executed when the ad is displayed.
+                            TastyToast.makeText(getApplicationContext(), "Copying begins when the ad closes", TastyToast.LENGTH_SHORT, TastyToast.SUCCESS);
+                        }
+
+                        @Override
+                        public void onAdLeftApplication() {
+                            // Code to be executed when the user has left the app.
+                            mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                            copymytext();
+                        }
+
+                        @Override
+                        public void onAdClosed() {
+                            // Code to be executed when the interstitial ad is closed.
+                            TastyToast.makeText(getApplicationContext(), "Text Copied !", TastyToast.LENGTH_SHORT, TastyToast.SUCCESS);
+                            mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                            copymytext();
+                        }
+                    });
+                } else {
+                    Log.d("TAG", "The interstitial wasn't loaded yet.");
+                    TastyToast.makeText(getApplicationContext(), "Text Copied !", TastyToast.LENGTH_SHORT, TastyToast.SUCCESS);
+                    copymytext();
+                    mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                }
+
+                break;
+            case R.id.action_refresh:
                 new FancyGifDialog.Builder(this)
                         .setTitle("What's going on with this?")
                         .setMessage("\n" +
@@ -236,6 +323,10 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
 
+            case R.id.tut:
+                showcasig1();
+                break;
+
             case  R.id.example1:
                  linkexample = "https://pastebin.com/raw/naU7ENWD";
                  getvalue();
@@ -271,6 +362,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
 
+        }
+    }
+    public void showads(){
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        } else {
+            Log.d("TAG", "The interstitial wasn't loaded yet.");
         }
     }
     public void unicodechanger(){
@@ -826,46 +924,7 @@ public class MainActivity extends AppCompatActivity {
             dialog.dismiss();
 
         }
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-            }
 
-            @Override
-            public void onAdFailedToLoad(LoadAdError adError) {
-                // Code to be executed when an ad request fails.
-                mInterstitialAd.loadAd(new AdRequest.Builder().build());
-                copymytext();
-            }
-
-            @Override
-            public void onAdOpened() {
-                // Code to be executed when the ad is displayed.
-                TastyToast.makeText(getApplicationContext(), "Copying begins when the ad closes", TastyToast.LENGTH_SHORT, TastyToast.SUCCESS);
-            }
-
-            @Override
-            public void onAdClicked() {
-                // Code to be executed when the user clicks on an ad.
-                mInterstitialAd.loadAd(new AdRequest.Builder().build());
-                copymytext();
-            }
-
-            @Override
-            public void onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
-                mInterstitialAd.loadAd(new AdRequest.Builder().build());
-                copymytext();
-            }
-
-            @Override
-            public void onAdClosed() {
-                // Code to be executed when the interstitial ad is closed.
-                mInterstitialAd.loadAd(new AdRequest.Builder().build());
-                copymytext();
-            }
-        });
 
     }
     public void copymytext(){
@@ -874,8 +933,65 @@ public class MainActivity extends AppCompatActivity {
         ClipboardManager clipbord = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("Text",clipiniya);
         clipbord.setPrimaryClip(clip);
-        TastyToast.makeText(getApplicationContext(), "Text Copied !", TastyToast.LENGTH_SHORT, TastyToast.SUCCESS);
     }
+    void showcasig1(){
+        builder = new GuideView.Builder(this)
+                .setTitle("Enter unicode characters here")
+                .setContentText("Enter Unicode characters here\n  Unicode characters can be typed in any form here\n just typing or copying and pasting is enough")
+                .setGravity(Gravity.center)
+                .setDismissType(DismissType.anywhere)
+                .setTargetView(view1)
+                .setGuideListener(new GuideListener() {
+                    @Override
+                    public void onDismiss(View view) {
+                        switch (view.getId()) {
+                            case R.id.firstlayout:
+                                builder.setTargetView(view2).build();
+                                builder.setTitle("Legacy font view area");
+                                builder.setContentText("What you write above will immediately become \n Legacy letters and appear in this section");
+                                break;
+                            case R.id.firstlayout2:
+                                builder.setTargetView(view3).build();
+                                builder.setTitle("Changing the size");
+                                builder.setContentText("Increasing or decreasing this will make it easier to change the font size");
+                                break;
+                            case R.id.seekBar:
+                                builder.setTargetView(view4).build();
+                                builder.setTitle("Eraser");
+                                builder.setContentText("Clicking this once will erase all what you wrote");
+                                break;
+                            case R.id.erazer:
+                                builder.setTargetView(view5).build();
+                                builder.setTitle("What the Legacy font looks like");
+                                builder.setContentText("This will give you an idea of how Legacy characters are used");
+                                break;
+                            case R.id.checkBox:
+                                builder.setTargetView(view6).build();
+                                builder.setTitle("Toolbar");
+                                builder.setContentText("With the click of a button here you can copy the translated words with one click");
+                                break;
+                            case R.id.toolbar:
+                                Prefs.putString("frist", "2ndtime");
+                                TastyToast.makeText(getApplicationContext(), "Tutorial Over", TastyToast.LENGTH_SHORT, TastyToast.SUCCESS);
+                                return;
 
+                        }
+                        mGuideView = builder.build();
+                        mGuideView.show();
+                    }
+                });
+
+        mGuideView = builder.build();
+        mGuideView.show();
+        updatingForDynamicLocationViews();
+    }
+    private void updatingForDynamicLocationViews() {
+        view4.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                mGuideView.updateGuideViewLocation();
+            }
+        });
+    }
 }
 
